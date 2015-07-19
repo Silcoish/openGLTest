@@ -1,0 +1,2 @@
+Requires SDL2.0
+place in include and libs folders
