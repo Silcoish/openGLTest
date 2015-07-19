@@ -28,12 +28,12 @@ GLuint Shader::Load()
 		{
 			if (line.find("#vert") != std::string::npos)
 			{
-				shaderType = ShaderType::FRAGMENT;
+				shaderType = ShaderType::VERTEX;
 				continue;
 			}
 			else if (line.find("#frag") != std::string::npos)
 			{
-				shaderType == ShaderType::FRAGMENT;
+				shaderType = ShaderType::FRAGMENT;
 				continue;
 			}
 
