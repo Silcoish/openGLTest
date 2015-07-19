@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <iostream>
+#include "Shader.h"
 
 int main(int argc, char * argv[])
 {
@@ -15,14 +16,20 @@ int main(int argc, char * argv[])
 
 	SDL_GLContext context = SDL_GL_CreateContext(window);
 
-	//test glew
-	glewExperimental = GL_TRUE;
 	glewInit();
 
-	GLuint vertexBuffer;
-	glGenBuffers(1, &vertexBuffer);
+	float vertices[] = {
+		0.0f,  0.5f,
+		0.5f, -0.5f,
+	   -0.5f, -0.5f
+	};
 
-	std::cout << vertexBuffer << std::endl;
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	Shader shader("Shader.shader");
 
 	SDL_Event windowEvent;
 	while (true)
