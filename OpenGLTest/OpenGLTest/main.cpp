@@ -1,55 +1,41 @@
-/*This source code copyrighted by Lazy Foo' Productions (2004-2015)
-and may not be redistributed without written permission.*/
-
-//Using SDL and standard IO
+#include <GL/glew.h>
 #include <SDL.h>
-#include <stdio.h>
+#include <SDL_opengl.h>
+#include <iostream>
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
-int main(int argc, char* args[])
+int main(int argc, char * argv[])
 {
-	//The window we'll be rendering to
-	SDL_Window* window = NULL;
+	SDL_Init(SDL_INIT_VIDEO);
 
-	//The surface contained by the window
-	SDL_Surface* screenSurface = NULL;
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 
-	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	SDL_Window* window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 500, SDL_WINDOW_OPENGL);
+
+	SDL_GLContext context = SDL_GL_CreateContext(window);
+
+	//test glew
+	glewExperimental = GL_TRUE;
+	glewInit();
+
+	GLuint vertexBuffer;
+	glGenBuffers(1, &vertexBuffer);
+
+	std::cout << vertexBuffer << std::endl;
+
+	SDL_Event windowEvent;
+	while (true)
 	{
-		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-	}
-	else
-	{
-		//Create window
-		window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-		if (window == NULL)
+		if (SDL_PollEvent(&windowEvent))
 		{
-			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+			if (windowEvent.type == SDL_QUIT) break;
 		}
-		else
-		{
-			//Get window surface
-			screenSurface = SDL_GetWindowSurface(window);
 
-			//Fill the surface white
-			SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-
-			//Update the surface
-			SDL_UpdateWindowSurface(window);
-
-			//Wait two seconds
-			SDL_Delay(2000);
-		}
+		SDL_GL_SwapWindow(window);
 	}
 
-	//Destroy window
-	SDL_DestroyWindow(window);
-
-	//Quit SDL subsystems
+	SDL_GL_DeleteContext(context);
 	SDL_Quit();
 
 	return 0;
