@@ -1,8 +1,9 @@
 #include "Shader.h"
 
-Shader::Shader(const std::string& filePath)
+Shader::Shader(std::string filePath)
 {
-	shaderPath = &filePath;
+	shaderPath = filePath;
+	
 	shaderID = Load();
 }
 
@@ -13,66 +14,81 @@ Shader::~Shader()
 
 GLuint Shader::Load()
 {
-	//GLuint program = glCreateProgram();
-	//GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	//GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	GLuint program = glCreateProgram();
 
 	std::string vertSource;
 	std::string fragSource;
 
-	std::ifstream file(*shaderPath);
+	std::ifstream file(shaderPath);
 	
-	file.seekg(0, file.end);
-	unsigned int length = file.tellg();
-	file.seekg(0, file.beg);
-
-	std::string data(length + 1, '\0');
-	file.read(&data[0], length);
-	
-	unsigned int vertPos = data.find("#vert");
-	unsigned int fragPos = data.find("#frag");
-	vertSource = data.substr(vertPos + 6, fragPos - 6);
-	fragSource = data.substr(fragPos);
-
-	/*if (file.is_open())
+	if (file.is_open())
 	{
-		std::string line;
-		while (std::getline(file, line))
-		{
-			if (line.find("#vert") != std::string::npos)
-			{
-				shaderType = ShaderType::VERTEX;
-				continue;
-			}
-			else if (line.find("#frag") != std::string::npos)
-			{
-				shaderType = ShaderType::FRAGMENT;
-				continue;
-			}
+		file.seekg(0, file.end);
+		unsigned int length = file.tellg();
+		file.seekg(0, file.beg);
 
-			switch (shaderType)
-			{
-			case Shader::VERTEX:
-				vertSource += line + "\n";
-				break;
-			case Shader::FRAGMENT:
-				fragSource += line + "\n";
-				break;
-			default:
-				std::cout << "you done bad" << std::endl;
-				break;
-			}	
-		}
+		std::string data(length + 1, '\0');
+		file.read(&data[0], length);
 
-		std::cout << vertSource << std::endl;
-		std::cout << fragSource << std::endl;
+		unsigned int vertPos = data.find("#vert");
+		unsigned int fragPos = data.find("#frag");
+		vertSource = data.substr(vertPos + 6, fragPos - 6);
+		fragSource = data.substr(fragPos + 6);
 	}
 	else
 	{
-		std::cout << "Error opening shader: " << *shaderPath << std::endl;
-	}*/
+		std::cout << "Failed to load shader: " << shaderPath << std::endl;
+	}
 
+	//ERROR CHECKING SETUP
+	GLint status;
+	char buffer[512];
 
-	//return program;
-	return 0;
+	//VERTEX SHADER
+	const char* v = vertSource.c_str();
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &v, NULL);
+	glCompileShader(vertexShader);
+
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+	glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
+
+	if (status == GL_FALSE)
+	{
+		std::cout << buffer << std::endl;
+		glDeleteShader(vertexShader);
+	}
+
+	//FRAGMENT SHADER
+	const char* f = fragSource.data();
+	GLuint fragmentShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(fragmentShader, 1, &f, NULL);
+	glCompileShader(fragmentShader);
+
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
+	glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
+
+	if (status == GL_FALSE)
+	{
+		std::cout << buffer << std::endl;
+		glDeleteShader(fragmentShader);
+	}
+
+	//PROGRAM
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, fragmentShader);
+	glBindFragDataLocation(program, 0, "outColor");
+	glLinkProgram(program);
+
+	return program;
+}
+
+void Shader::Enable()
+{
+	glUseProgram(shaderID);
+}
+
+void Shader::Disable()
+{
+	glUseProgram(0);
 }

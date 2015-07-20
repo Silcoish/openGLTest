@@ -17,13 +17,15 @@ private:
 		NONE
 	};
 
-	const std::string* shaderPath;
+	std::string shaderPath;
 	ShaderType shaderType = ShaderType::NONE;
 
 public:
 	GLuint shaderID;
-	Shader(const std::string& filePath);
+	Shader(std::string filePath);
 	~Shader();
+	void Enable();
+	void Disable();
 
 private:
 	GLuint Load();

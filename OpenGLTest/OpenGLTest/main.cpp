@@ -24,12 +24,22 @@ int main(int argc, char * argv[])
 	   -0.5f, -0.5f
 	};
 
+	std::cout << &glGenVertexArrays << std::endl;
+
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
 	GLuint vbo;
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	Shader shader("Shader.shader");
+
+	GLint posAttrib = glGetAttribLocation(shader.shaderID, "position");
+	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(posAttrib);
 
 	SDL_Event windowEvent;
 	while (true)
@@ -41,6 +51,8 @@ int main(int argc, char * argv[])
 
 		SDL_GL_SwapWindow(window);
 	}
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	SDL_GL_DeleteContext(context);
 	SDL_Quit();
