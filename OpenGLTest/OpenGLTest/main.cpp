@@ -41,6 +41,9 @@ int main(int argc, char * argv[])
 	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(posAttrib);
 
+	GLint uniColor = glGetUniformLocation(shader.shaderID, "triangleColor");
+	glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);
+
 	SDL_Event windowEvent;
 	while (true)
 	{
@@ -49,6 +52,9 @@ int main(int argc, char * argv[])
 			if (windowEvent.type == SDL_QUIT) break;
 		}
 
+		glUniform3f(uniColor, ((double)rand() / (RAND_MAX)), ((double)rand() / (RAND_MAX)), ((double)rand() / (RAND_MAX)));
+
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		SDL_GL_SwapWindow(window);
 	}
