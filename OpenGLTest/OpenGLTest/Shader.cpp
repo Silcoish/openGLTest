@@ -21,7 +21,20 @@ GLuint Shader::Load()
 	std::string fragSource;
 
 	std::ifstream file(*shaderPath);
-	if (file.is_open())
+	
+	file.seekg(0, file.end);
+	unsigned int length = file.tellg();
+	file.seekg(0, file.beg);
+
+	std::string data(length + 1, '\0');
+	file.read(&data[0], length);
+	
+	unsigned int vertPos = data.find("#vert");
+	unsigned int fragPos = data.find("#frag");
+	vertSource = data.substr(vertPos + 6, fragPos - 6);
+	fragSource = data.substr(fragPos);
+
+	/*if (file.is_open())
 	{
 		std::string line;
 		while (std::getline(file, line))
@@ -57,7 +70,7 @@ GLuint Shader::Load()
 	else
 	{
 		std::cout << "Error opening shader: " << *shaderPath << std::endl;
-	}
+	}*/
 
 
 	//return program;
