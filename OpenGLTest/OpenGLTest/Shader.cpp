@@ -3,7 +3,6 @@
 Shader::Shader(std::string filePath)
 {
 	shaderPath = filePath;
-	
 	shaderID = Load();
 }
 
@@ -55,13 +54,13 @@ GLuint Shader::Load()
 
 	if (status == GL_FALSE)
 	{
-		std::cout << buffer << std::endl;
+		std::cout << "You have a vertex error: " << buffer << std::endl;
 		glDeleteShader(vertexShader);
 	}
 
 	//FRAGMENT SHADER
 	const char* f = fragSource.data();
-	GLuint fragmentShader = glCreateShader(GL_VERTEX_SHADER);
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &f, NULL);
 	glCompileShader(fragmentShader);
 
@@ -70,7 +69,7 @@ GLuint Shader::Load()
 
 	if (status == GL_FALSE)
 	{
-		std::cout << buffer << std::endl;
+		std::cout << "You have a fragment error: " << buffer << std::endl;
 		glDeleteShader(fragmentShader);
 	}
 
